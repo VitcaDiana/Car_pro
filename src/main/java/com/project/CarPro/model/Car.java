@@ -3,8 +3,8 @@ package com.project.CarPro.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.util.List;
+
 
 @Entity
 public class Car {
@@ -27,6 +27,9 @@ public class Car {
     @Column
     private String registrationNumber;
 
+    @Column
+    private String carType;
+
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "car-document")
     private List<Documents> listDocuments;
@@ -44,17 +47,7 @@ public class Car {
     @JsonManagedReference(value = "car-cardriver")
     private List<CarDriver> carDriverList;
 
-    public Car(String brand, String model, int productionYear, String color, double mileage, String registrationNumber, List<Documents> listDocuments, Fleet fleet, List<Expenses> listExpenses) {
-        this.brand = brand;
-        this.model = model;
-        this.productionYear = productionYear;
-        this.color = color;
-        this.mileage = mileage;
-        this.registrationNumber = registrationNumber;
-        this.listDocuments = listDocuments;
-        this.fleet = fleet;
-        this.listExpenses = listExpenses;
-    }
+
 
     public Car() {
     }
@@ -137,5 +130,21 @@ public class Car {
 
     public void setListExpenses(List<Expenses> listExpenses) {
         this.listExpenses = listExpenses;
+    }
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public List<CarDriver> getCarDriverList() {
+        return carDriverList;
+    }
+
+    public void setCarDriverList(List<CarDriver> carDriverList) {
+        this.carDriverList = carDriverList;
     }
 }

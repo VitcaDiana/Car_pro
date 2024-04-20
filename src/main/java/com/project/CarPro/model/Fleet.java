@@ -16,7 +16,6 @@ public class Fleet {
     @Column
     private int totalNumberOfCars;
 
-
     @OneToMany(mappedBy = "fleet", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "fleet-car")
     private List<Car> listCar;
@@ -25,4 +24,46 @@ public class Fleet {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
+    public Fleet() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFleetName() {
+        return fleetName;
+    }
+
+    public void setFleetName(String fleetName) {
+        this.fleetName = fleetName;
+    }
+
+    public int getTotalNumberOfCars() {
+        return totalNumberOfCars;
+    }
+
+    public void setTotalNumberOfCars(int totalNumberOfCars) {
+        this.totalNumberOfCars = totalNumberOfCars;
+    }
+
+    public List<Car> getListCar() {
+        return listCar;
+    }
+
+    public void setListCar(List<Car> listCar) {
+        this.listCar = listCar;
+    }
+
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
 }

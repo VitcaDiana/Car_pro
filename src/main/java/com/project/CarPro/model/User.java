@@ -1,5 +1,6 @@
 package com.project.CarPro.model;
 
+
 import jakarta.persistence.*;
 
 @Entity
@@ -15,19 +16,8 @@ public class User {
     @Column
     private String password;
 
-    @Column
-    private String email;
-    @Column
-    private String telephone;
 
     public User() {
-    }
-
-    public User(String name, String email, String telephone) {
-        this.name = name;
-        this.email = email;
-        this.telephone = telephone;
-
     }
 
     public Long getId() {
@@ -46,23 +36,6 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-
     public String getPassword() {
         return password;
     }
@@ -71,3 +44,4 @@ public class User {
         this.password = password;
     }
 }
+

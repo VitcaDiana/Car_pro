@@ -28,7 +28,8 @@ public class Car {
     private String registrationNumber;
 
     @Column
-    private String carType;
+    @Enumerated(EnumType.STRING)
+    private CarType carType;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "car-document")
@@ -132,11 +133,11 @@ public class Car {
         this.listExpenses = listExpenses;
     }
 
-    public String getCarType() {
+    public CarType getCarType() {
         return carType;
     }
 
-    public void setCarType(String carType) {
+    public void setCarType(CarType carType) {
         this.carType = carType;
     }
 
@@ -147,4 +148,6 @@ public class Car {
     public void setCarDriverList(List<CarDriver> carDriverList) {
         this.carDriverList = carDriverList;
     }
+
+
 }

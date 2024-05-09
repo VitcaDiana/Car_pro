@@ -1,10 +1,12 @@
 package com.project.CarPro.services;
 
-import com.project.CarPro.dto.CarRequestDTO;
-import com.project.CarPro.model.Car;
-import com.project.CarPro.model.CarDriver;
-import com.project.CarPro.model.Driver;
-import com.project.CarPro.model.Fleet;
+import com.project.CarPro.dto.request.CarRequestDTO;
+import com.project.CarPro.dto.request.ManagerRequestDTO;
+import com.project.CarPro.dto.response.CarResponseDTO;
+import com.project.CarPro.dto.response.ManagerResponseDTO;
+import com.project.CarPro.mapper.CarMapper;
+import com.project.CarPro.model.*;
+import com.project.CarPro.repositories.CarDriverRepository;
 import com.project.CarPro.repositories.CarRepository;
 import com.project.CarPro.repositories.DriverRepository;
 import com.project.CarPro.repositories.FleetRepository;
@@ -12,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,26 +23,29 @@ public class CarService {
     CarRepository carRepository;
     FleetRepository fleetRepository;
     DriverRepository driverRepository;
-@Autowired
-    public CarService(CarRepository carRepository,FleetRepository fleetRepository,DriverRepository driverRepository) {
+    CarDriverRepository carDriverRepository;
+    CarMapper carMapper;
+
+    @Autowired
+    public CarService(CarRepository carRepository, FleetRepository fleetRepository, DriverRepository driverRepository, CarDriverRepository carDriverRepository, CarMapper carMapper) {
         this.carRepository = carRepository;
         this.fleetRepository = fleetRepository;
         this.driverRepository = driverRepository;
+        this.carDriverRepository = carDriverRepository;
+        this.carMapper = carMapper;
     }
 
-    public List<Car> getAllCars() {
-        return carRepository.findAll();
-    }
-
-    public Optional<Car> getCarById(Long id) {
-        return carRepository.findById(id);
-    }
 
     @Transactional
-    public Car addCarToDriver(Long driverId, CarRequestDTO carRequestDTO, Long fleetId) {
+    public CarResponseDTO addCarToDriver(Long driverId, CarRequestDTO carRequestDTO, Long fleetId) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
 
+        CarType carType = carRequestDTO.getCarType();
+        //verific daca este dat fleetId si daca carType este electric
+        if (fleetId != null && carType != CarType.ELECTRIC) {
+            throw new RuntimeException("Only electric car type is allowed for fleet cars");
+        }
         Car car = new Car();
         car.setBrand(carRequestDTO.getBrand());
         car.setModel(carRequestDTO.getModel());
@@ -48,30 +54,70 @@ public class CarService {
         car.setMileage(carRequestDTO.getMileage());
         car.setRegistrationNumber(carRequestDTO.getRegistrationNumber());
         car.setCarType(carRequestDTO.getCarType());
-
-        // Asociază mașina cu șoferul
-        CarDriver carDriver = new CarDriver();
-        carDriver.setCar(car);
-        carDriver.setDriver(driver);
-
-        List<CarDriver> carDriverList = driver.getCarDriverList();
-        carDriverList.add(carDriver);
-        driver.setCarDriverList(carDriverList);
-
-        // Dacă fleetId este furnizat, asociază mașina cu flota specificată
         if (fleetId != null) {
             Fleet fleet = fleetRepository.findById(fleetId)
                     .orElseThrow(() -> new RuntimeException("Fleet not found"));
             car.setFleet(fleet);
         }
 
-        return carRepository.save(car);
 
+        // Asociaz masina cu soferul
+        CarDriver carDriver = new CarDriver();
+        carDriver.setCar(car);
+        carDriver.setDriver(driver);
+        carDriver.setFleetId(fleetId);
+        carDriver.setStartDate(LocalDate.now());
+
+
+        List<CarDriver> carDriverList = driver.getCarDriverList();
+        carDriverList.add(carDriver);
+        driver.setCarDriverList(carDriverList);
+
+
+        carRepository.save(car);
+        CarResponseDTO carResponseDTO = carMapper.mapFromCarToCarResponseDTO(car);
+        return carResponseDTO;
 
     }
 
-    public void deleteCar(Long id) {
-        carRepository.deleteById(id);
+    public void deleteCar(Long carId) {
+
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        List<CarDriver> carDrivers = carDriverRepository.findByCar(car);
+
+        // sterg legaturile din car_driver
+        carDriverRepository.deleteAll(carDrivers);
+
+        carRepository.delete(car);
     }
+
+    public Car getCar(Long carId) {
+        return carRepository.findById(carId)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+    }
+
+    @Transactional
+    public CarResponseDTO updateCar(Long carId, CarRequestDTO carRequestDTO) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+        Fleet carFleet = car.getFleet();
+        if (carFleet != null && carRequestDTO.getCarType() != CarType.ELECTRIC) {
+            throw new RuntimeException("Only electric car type is allowed for fleet cars");
+        }
+
+        car.setBrand(carRequestDTO.getBrand());
+        car.setModel(carRequestDTO.getModel());
+        car.setProductionYear(carRequestDTO.getProductionYear());
+        car.setColor(carRequestDTO.getColor());
+        car.setMileage(carRequestDTO.getMileage());
+        car.setRegistrationNumber(carRequestDTO.getRegistrationNumber());
+        car.setCarType(carRequestDTO.getCarType());
+
+        carRepository.save(car);
+        return carMapper.mapFromCarToCarResponseDTO(car);
+    }
+
 
 }

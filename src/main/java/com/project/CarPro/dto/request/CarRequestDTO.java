@@ -1,4 +1,6 @@
-package com.project.CarPro.dto;
+package com.project.CarPro.dto.request;
+
+import com.project.CarPro.model.CarType;
 
 public class CarRequestDTO {
     private String brand;
@@ -7,10 +9,10 @@ public class CarRequestDTO {
     private String color;
     private double mileage;
     private String registrationNumber;
-    private String carType;
+    private CarType carType;
     private Long fleetId;
 
-    public CarRequestDTO(String brand, String model, int productionYear, String color, double mileage, String registrationNumber, String carType, Long fleetId) {
+    public CarRequestDTO(String brand, String model, int productionYear, String color, double mileage, String registrationNumber, CarType carType, Long fleetId) {
         this.brand = brand;
         this.model = model;
         this.productionYear = productionYear;
@@ -69,11 +71,11 @@ public class CarRequestDTO {
         this.registrationNumber = registrationNumber;
     }
 
-    public String getCarType() {
+    public CarType getCarType() {
         return carType;
     }
 
-    public void setCarType(String carType) {
+    public void setCarType(CarType carType) {
         this.carType = carType;
     }
 

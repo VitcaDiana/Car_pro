@@ -1,23 +1,18 @@
-package com.project.CarPro.dto;
+package com.project.CarPro.dto.response;
 
-import com.project.CarPro.model.Fleet;
-
-public class ManagerRequestDTO {
+public class DriverResponseDTO {
+    private Long id;
     private String name;
     private String email;
     private String telephone;
-    private String password;
 
-
-
-
-
-    public ManagerRequestDTO(String name, String email, String telephone,String password) {
+    public DriverResponseDTO(Long id,String name, String email, String telephone) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.telephone = telephone;
-        this.password = password;
     }
+    public DriverResponseDTO() {}
 
     public String getName() {
         return name;
@@ -39,15 +34,16 @@ public class ManagerRequestDTO {
         return telephone;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setTelephone(String telephone) {
         this.telephone = telephone;
-    }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

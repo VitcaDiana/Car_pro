@@ -1,10 +1,5 @@
-package com.project.CarPro.dto;
+package com.project.CarPro.dto.request;
 
-
-import com.project.CarPro.model.Car;
-import com.project.CarPro.model.Manager;
-
-import java.util.List;
 
 public class FleetRequestDTO {
     private String fleetName;

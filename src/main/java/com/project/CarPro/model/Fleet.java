@@ -13,8 +13,7 @@ public class Fleet {
 
     @Column
     private String fleetName;
-    @Column
-    private int totalNumberOfCars;
+
 
     @OneToMany(mappedBy = "fleet", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "fleet-car")
@@ -43,13 +42,6 @@ public class Fleet {
         this.fleetName = fleetName;
     }
 
-    public int getTotalNumberOfCars() {
-        return totalNumberOfCars;
-    }
-
-    public void setTotalNumberOfCars(int totalNumberOfCars) {
-        this.totalNumberOfCars = totalNumberOfCars;
-    }
 
     public List<Car> getListCar() {
         return listCar;

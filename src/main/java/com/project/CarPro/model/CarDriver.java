@@ -14,6 +14,7 @@ public class CarDriver {
     LocalDate startDate;
 
     LocalDate endDate;
+    Long fleetId;
 
     @ManyToOne
     @JoinColumn(name = "car_id")
@@ -66,5 +67,13 @@ public class CarDriver {
 
     public void setDriver(Driver driver) {
         this.driver = driver;
+    }
+
+    public Long getFleetId() {
+        return fleetId;
+    }
+
+    public void setFleetId(Long fleetId) {
+        this.fleetId = fleetId;
     }
 }

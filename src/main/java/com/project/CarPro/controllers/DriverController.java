@@ -1,17 +1,16 @@
 package com.project.CarPro.controllers;
 
-import com.project.CarPro.dto.DriverRequestDTO;
-import com.project.CarPro.dto.ManagerRequestDTO;
+import com.project.CarPro.dto.request.DriverRequestDTO;
+import com.project.CarPro.dto.request.ManagerRequestDTO;
+import com.project.CarPro.dto.response.DriverResponseDTO;
+import com.project.CarPro.dto.response.ManagerResponseDTO;
 import com.project.CarPro.model.Driver;
 import com.project.CarPro.model.Manager;
 import com.project.CarPro.services.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/driver")
@@ -23,8 +22,23 @@ public class DriverController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Driver> addDriver (@RequestBody DriverRequestDTO driverRequestDTO) {
+    public ResponseEntity<DriverResponseDTO> addDriver (@RequestBody DriverRequestDTO driverRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(driverService.addDriver(driverRequestDTO));
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<DriverResponseDTO> getDriver(@PathVariable Long id) {
+        DriverResponseDTO driver = driverService.getDriver(id);
+        return ResponseEntity.status(HttpStatus.OK).body(driver);
+    }
+    @DeleteMapping("/{driverId}")
+    public ResponseEntity<Void> deleteDriver(@PathVariable Long driverId) {
+        driverService.deleteDriver(driverId);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{driverId}")
+    public ResponseEntity<DriverResponseDTO> updateDriver(@PathVariable Long driverId, @RequestBody DriverRequestDTO driverRequestDTO) {
+        DriverResponseDTO driverResponseDTO = driverService.updateDriver(driverId, driverRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(driverResponseDTO);
     }
 }
 

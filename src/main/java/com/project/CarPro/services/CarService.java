@@ -46,6 +46,10 @@ public class CarService {
         if (fleetId != null && carType != CarType.ELECTRIC) {
             throw new RuntimeException("Only electric car type is allowed for fleet cars");
         }
+
+        //TODO
+        // de acceptat ca parametru carId
+        // si de cautat in baza de date acea masina deja existenta
         Car car = new Car();
         car.setBrand(carRequestDTO.getBrand());
         car.setModel(carRequestDTO.getModel());
@@ -80,6 +84,25 @@ public class CarService {
 
     }
 
+    public boolean existsDriverOnCar(Long carId, Long driverId) {
+        List<CarDriver> carDrivers = carDriverRepository.findByCar_Id(carId);
+        return carDrivers.stream()
+                .anyMatch(carDriver -> carDriver.getDriver().equals(driverId) && carDriver.getEndDate() == null);
+    }
+    //TODO
+    //removeCarFromDriver(endDate)
+    @Transactional
+    public void removeCarFromDriver(Long carId, Long driverId) {
+        List<CarDriver> carDrivers = carDriverRepository.findByCar_IdAndDriver_Id(carId,driverId);
+        Optional<CarDriver> carDriverOptional = carDrivers.stream()
+                .filter(carDriver -> carDriver.getEndDate() == null)
+                .findFirst();
+
+        carDriverOptional.ifPresent(carDriver -> {
+            carDriver.setEndDate(LocalDate.now()); // Remove the car
+            carDriverRepository.save(carDriver);
+        });
+    }
     public void deleteCar(Long carId) {
 
         Car car = carRepository.findById(carId)

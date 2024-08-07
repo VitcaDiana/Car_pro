@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/driver")
 public class DriverController {
@@ -39,6 +41,19 @@ public class DriverController {
     public ResponseEntity<DriverResponseDTO> updateDriver(@PathVariable Long driverId, @RequestBody DriverRequestDTO driverRequestDTO) {
         DriverResponseDTO driverResponseDTO = driverService.updateDriver(driverId, driverRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(driverResponseDTO);
+    }
+    //ToDo
+    //getALLDRiversByCar
+    @GetMapping("/{carId}")
+    public ResponseEntity<List<Driver>> getALlDrivers(@PathVariable Long carId) {
+        List<Driver> drivers = driverService.getAllDriversByCar(carId);
+        return ResponseEntity.ok(drivers);
+
+    }
+    @GetMapping("/drivers")
+    public ResponseEntity<List<Driver>> getAllDrivers() {
+        List<Driver> drivers = driverService.getAllDrivers();
+        return ResponseEntity.ok(drivers);
     }
 }
 

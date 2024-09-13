@@ -15,6 +15,8 @@ public class User {
     private String name;
     @Column
     private String password;
+    @Column
+    private String enodeUserId;
 
 
     public User() {
@@ -42,6 +44,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEnodeUserId() {
+        return enodeUserId;
+    }
+
+    public void setEnodeUserId(String enodeUserId) {
+        this.enodeUserId = enodeUserId;
     }
 }
 

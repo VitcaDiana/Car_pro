@@ -11,8 +11,11 @@ public class CarRequestDTO {
     private String registrationNumber;
     private CarType carType;
     private Long fleetId;
+    private String vin;
+    private String enodeId;
 
-    public CarRequestDTO(String brand, String model, int productionYear, String color, double mileage, String registrationNumber, CarType carType, Long fleetId) {
+
+    public CarRequestDTO(String brand, String model, int productionYear, String color, double mileage, String registrationNumber, CarType carType, Long fleetId, String vin, String enodeId) {
         this.brand = brand;
         this.model = model;
         this.productionYear = productionYear;
@@ -21,6 +24,13 @@ public class CarRequestDTO {
         this.registrationNumber = registrationNumber;
         this.carType = carType;
         this.fleetId = fleetId;
+        this.vin = vin;
+        this.enodeId = enodeId;
+
+    }
+
+    public CarRequestDTO() {
+
     }
 
     public String getBrand() {
@@ -85,5 +95,21 @@ public class CarRequestDTO {
 
     public void setFleetId(Long fleetId) {
         this.fleetId = fleetId;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
+    public String getEnodeId() {
+        return enodeId;
+    }
+
+    public void setEnodeId(String enodeId) {
+        this.enodeId = enodeId;
     }
 }

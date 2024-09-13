@@ -7,12 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car,Long> {
 
     List<Car> findCarsByFleetId(Long fleetId);
 
+
+    @Query("SELECT c.vin FROM Car c")
+    List<String> findAllVins();
+    Optional<Car> findByVin(String vin);
 
     @Query("SELECT cd.car FROM CarDriver cd WHERE cd.driver.id = :driverId")
     List<Car> findCarsByDriverId(Long driverId);

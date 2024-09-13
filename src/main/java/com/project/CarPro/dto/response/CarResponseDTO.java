@@ -11,10 +11,12 @@ public class CarResponseDTO {
     private double mileage;
     private String registrationNumber;
     private CarType carType;
+    private String vin;
+    private String enodeId;
 
     public CarResponseDTO(){}
 
-    public CarResponseDTO(Long id, String brand, String model, int productionYear, String color, double mileage, String registrationNumber, CarType carType) {
+    public CarResponseDTO(Long id, String brand, String model, int productionYear, String color, double mileage, String registrationNumber, CarType carType,String vin, String enodeId) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -23,6 +25,8 @@ public class CarResponseDTO {
         this.mileage = mileage;
         this.registrationNumber = registrationNumber;
         this.carType = carType;
+        this.vin = vin;
+        this.enodeId = enodeId;
     }
 
     public Long getId() {
@@ -87,5 +91,21 @@ public class CarResponseDTO {
 
     public void setCarType(CarType carType) {
         this.carType = carType;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
+    public String getEnodeId() {
+        return enodeId;
+    }
+
+    public void setEnodeId(String enodeId) {
+        this.enodeId = enodeId;
     }
 }

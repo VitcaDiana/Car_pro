@@ -15,7 +15,7 @@ public class Manager extends User {
     @Column
     private String telephone;
     @JsonIgnore
-    @OneToOne(mappedBy = "manager")
+    @OneToOne(mappedBy = "manager",cascade = CascadeType.ALL,orphanRemoval = true)
     private Fleet fleet;
 
     public Manager() {

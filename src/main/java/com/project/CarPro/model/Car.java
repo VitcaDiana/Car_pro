@@ -31,11 +31,10 @@ public class Car {
     @Column
     @Enumerated(EnumType.STRING)
     private CarType carType;
-
-    @Column(unique = true)
+    @Column
     private String vin;
 
-    @Column(unique = true)
+    @Column
     private String enodeId;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)

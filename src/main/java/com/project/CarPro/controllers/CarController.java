@@ -50,7 +50,7 @@ public class CarController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{carId}/removeDriver")
+    @DeleteMapping("/removeDriver/{carId}/{driverId}")
     public ResponseEntity<Void> removeCarFromDriver(@PathVariable Long carId, @PathVariable Long driverId) {
         carService.removeCarFromDriver(carId, driverId);
         return ResponseEntity.noContent().build();

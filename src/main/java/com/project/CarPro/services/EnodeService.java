@@ -10,6 +10,7 @@ import com.project.CarPro.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -95,24 +96,35 @@ public class EnodeService {
         OAuth2AccessToken accessToken = getAccessToken();
         // iau toate masinile de de pe Enode folosind tokenul
         String userVehiclesResponse = fetchEnodeCarsFromApi(accessToken);
+        System.out.println("Response from Enode API: " + userVehiclesResponse);
         //raspuns API -> lista de CarRequestDTO
         List<CarRequestDTO> enodeCars = parseEnodeCars(userVehiclesResponse);
         //iau lista de VIN-uri din baza de date
         List<String> existingVinList = carRepository.findAllVins();
-        //gasim masinile din Enode care nu se afla in baza de date dupa VIN
+        //gasim masinile din Enode care nu se afla in baza de date dupa VIN si le excludem pe cela fara vin
         List<CarRequestDTO> newCars = enodeCars.stream()
+                .filter(car -> car.getVin() != null && !car.getVin().isEmpty())
                 .filter(car -> !existingVinList.contains(car.getVin()))
                 .collect(Collectors.toList());
 
         //salvam masinile noi in baza de date
         for (CarRequestDTO newCar : newCars) {
-            carService.addCar(newCar,null);
+            try {
+                Optional<Car> existingCar = carRepository.findByVin(newCar.getVin());
+                if (existingCar.isEmpty()) {
+                    carService.addCar(newCar, null);
+                } else {
+                    System.out.println("Car with VIN: " + newCar.getVin() + " already exists.");
+                }
+            } catch (DataIntegrityViolationException e) {
+                System.out.println("Error while adding car: " + e.getMessage());
+            }
+
         }
     }
 
 
-
-    private List<CarRequestDTO> parseEnodeCars(String userVehiclesResponse) {
+    public List<CarRequestDTO> parseEnodeCars(String userVehiclesResponse) {
         List<CarRequestDTO> carList = new ArrayList<>();
 
         try {
@@ -127,6 +139,12 @@ public class EnodeService {
                     String model = carNode.get("information").get("model").asText();
                     int year = carNode.get("information").get("year").asInt();
                     double mileage = carNode.get("odometer").get("distance").asDouble();
+
+                    //ignoram masinile fara VIN valid
+                    if (vin == null || vin.isEmpty()) {
+                        System.out.println("Car with enodeId: " + enodeId + " do not have VIN");
+                        continue;
+                    }
 
                     CarRequestDTO carRequestDTO = new CarRequestDTO();
 
@@ -147,16 +165,16 @@ public class EnodeService {
         return carList;
     }
 
-private String fetchEnodeCarsFromApi(OAuth2AccessToken accessToken) {
-    String url = "https://enode-api.sandbox.enode.io/vehicles";
+    public String fetchEnodeCarsFromApi(OAuth2AccessToken accessToken) {
+        String url = "https://enode-api.sandbox.enode.io/vehicles";
 
-    return this.webClient.get()
-            .uri(url)
-            .header("Authorization", "Bearer " + accessToken.getTokenValue())
-            .retrieve()
-            .bodyToMono(String.class)
-            .block();
-}
+        return this.webClient.get()
+                .uri(url)
+                .header("Authorization", "Bearer " + accessToken.getTokenValue())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
 
 
     public Mono<String> listLocations(String userId, String after, String before, Integer pageSize) {
@@ -196,14 +214,25 @@ private String fetchEnodeCarsFromApi(OAuth2AccessToken accessToken) {
                 .bodyToMono(String.class);
     }
 
-    public Mono<String> getVehicleState(String vehicleId) {
+    public Mono<String> getVehicleState(String enodeId) {
         OAuth2AccessToken accessToken = getAccessToken();
         // Facem cererea GET pentru a obține locațiile pentru userId
         return webClient.get()
-                .uri("https://enode-api.sandbox.enode.io/vehicles/{id}", vehicleId)
+                .uri("https://enode-api.sandbox.enode.io/vehicles/{enodeId}", enodeId)
                 .header("Authorization", "Bearer " + accessToken.getTokenValue())
                 .retrieve()
                 .bodyToMono(String.class);
+    }
+
+    public Mono<String> getVehicleStateById(Long carId){
+        return Mono.justOrEmpty(carRepository.findById(carId))
+                .flatMap(car -> {
+                    String enodeId = car.getEnodeId();
+                    if (enodeId == null || enodeId.isEmpty()){
+                        return Mono.error(new IllegalArgumentException("Enode id not found for this car id"));
+                    }
+                    return getVehicleState(enodeId);
+                });
     }
 }
 

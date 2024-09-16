@@ -26,14 +26,12 @@ public class DocumentService {
         this.carRepository = carRepository;
     }
 
-
-
     public Optional<Documents> getDocumentById(Long id) {
 
         return documentRepository.findById(id);
     }
-    @Transactional
 
+    @Transactional
     public Documents addDocument(Long carId, DocumentRequestDTO documentRequestDTO) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new RuntimeException("Car not found"));

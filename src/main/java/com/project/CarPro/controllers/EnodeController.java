@@ -40,8 +40,8 @@ public class EnodeController {
     }
 
     @GetMapping("/state/{id}")
-    public Mono<String> getVehicleState(@PathVariable String id) {
-        return enodeService.getVehicleState(id);
+    public Mono<String> getVehicleState(@PathVariable Long id) {
+        return enodeService.getVehicleStateById(id);
     }
 
     @GetMapping("/user/vehicles/{userId}")

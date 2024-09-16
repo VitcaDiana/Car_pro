@@ -9,6 +9,7 @@ import com.project.CarPro.model.*;
 import com.project.CarPro.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -48,32 +49,37 @@ public CarResponseDTO addCar(CarRequestDTO carRequestDTO, Long fleetId) {
     // si de cautat in baza de date acea masina deja existenta
 
 
-    CarType carType = carRequestDTO.getCarType();
-    //verific daca este dat fleetId si daca carType este electric
-    if (fleetId != null && carType != CarType.ELECTRIC) {
-        throw new RuntimeException("Only electric car type is allowed for fleet cars");
+        // Verificam daca masina cu VIN-ul dat exista deja
+        Optional<Car> existingCar = carRepository.findByVin(carRequestDTO.getVin());
+        if (existingCar.isPresent()) {
+            throw new DataIntegrityViolationException("Car with VIN: " + carRequestDTO.getVin() + " already exists.");
+        }
+
+        CarType carType = carRequestDTO.getCarType();
+        if (fleetId != null && carType != CarType.ELECTRIC) {
+            throw new RuntimeException("Only electric car type is allowed for fleet cars");
+        }
+
+        Car car = new Car();
+        car.setBrand(carRequestDTO.getBrand());
+        car.setModel(carRequestDTO.getModel());
+        car.setColor(carRequestDTO.getColor());
+        car.setProductionYear(carRequestDTO.getProductionYear());
+        car.setMileage(carRequestDTO.getMileage());
+        car.setRegistrationNumber(carRequestDTO.getRegistrationNumber());
+        car.setCarType(carRequestDTO.getCarType());
+        car.setVin(carRequestDTO.getVin());
+        car.setEnodeId(carRequestDTO.getEnodeId());  // Setează și enodeId-ul
+
+        if (fleetId != null) {
+            Fleet fleet = fleetRepository.findById(fleetId)
+                    .orElseThrow(() -> new RuntimeException("Fleet not found"));
+            car.setFleet(fleet);
+        }
+
+        carRepository.save(car);
+        return carMapper.mapFromCarToCarResponseDTO(car);
     }
-
-    Car car = new Car();
-    car.setBrand(carRequestDTO.getBrand());
-    car.setModel(carRequestDTO.getModel());
-    car.setColor(carRequestDTO.getColor());
-    car.setProductionYear(carRequestDTO.getProductionYear());
-    car.setMileage(carRequestDTO.getMileage());
-    car.setRegistrationNumber(carRequestDTO.getRegistrationNumber());
-    car.setCarType(carRequestDTO.getCarType());
-    car.setVin(carRequestDTO.getVin());
-
-
-    if (fleetId != null) {
-        Fleet fleet = fleetRepository.findById(fleetId)
-                .orElseThrow(() -> new RuntimeException("Fleet not found"));
-        car.setFleet(fleet);
-    }
-
-    carRepository.save(car);
-    return carMapper.mapFromCarToCarResponseDTO(car);
-}
 
 public CarResponseDTO addCarToDriver(Long driverId, Long carId) {
     Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found"));

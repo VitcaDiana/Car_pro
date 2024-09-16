@@ -20,13 +20,12 @@ public class ManagerService {
     ManagerMapper managerMapper;
 
     @Autowired
-    public ManagerService(ManagerMapper managerMapper,ManagerRepository managerRepository, UserRepository userRepository, FleetRepository fleetRepository) {
+    public ManagerService(ManagerMapper managerMapper, ManagerRepository managerRepository, UserRepository userRepository, FleetRepository fleetRepository) {
         this.managerRepository = managerRepository;
         this.userRepository = userRepository;
         this.fleetRepository = fleetRepository;
         this.managerMapper = managerMapper;
     }
-
 
 
     @Transactional
@@ -43,13 +42,15 @@ public class ManagerService {
 
     @Transactional
     public ManagerResponseDTO getManager(Long managerId) {
-        Manager manager= managerRepository.findById(managerId).orElseThrow(() -> new RuntimeException("Manager not found"));
-         return managerMapper.mapFromManagerToManagerResponseDTO(manager);
+        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new RuntimeException("Manager not found"));
+        return managerMapper.mapFromManagerToManagerResponseDTO(manager);
     }
 
+    @Transactional
     public void deleteManager(Long managerId) {
         managerRepository.deleteById(managerId);
     }
+
     public ManagerResponseDTO updateManager(Long managerId, ManagerRequestDTO managerRequestDTO) {
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new RuntimeException("Manager not found"));

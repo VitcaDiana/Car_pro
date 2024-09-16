@@ -17,6 +17,7 @@ public class CarMapper {
         carResponseDTO.setMileage(car.getMileage());
         carResponseDTO.setRegistrationNumber(car.getRegistrationNumber());
         carResponseDTO.setCarType(car.getCarType());
+        carResponseDTO.setVin(car.getVin());
 
         return carResponseDTO;
     }

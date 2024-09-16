@@ -30,7 +30,6 @@ public class CarRequestDTO {
     }
 
     public CarRequestDTO() {
-
     }
 
     public String getBrand() {

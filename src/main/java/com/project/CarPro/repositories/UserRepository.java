@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
-    @Query("SELECT u.enodeUserId FROM User u WHERE u.enodeUserId IS NOT NULL")
-    List<String> findAllEnodeUserIds();
+
 }
